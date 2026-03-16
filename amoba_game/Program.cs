@@ -10,7 +10,7 @@ namespace amoba_game
 	{
 		static void Main(string[] args)
 		{
-
+			Console.WriteLine("Amöba játék");
 		}
 	}
 }
