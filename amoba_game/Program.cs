@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.WebSockets;
 using System.Xml.Linq;
 
 namespace amoba_game
@@ -12,6 +13,18 @@ namespace amoba_game
 
 			Console.WriteLine("Add meg az második játékos nevét");
 			string Jatekos2 = Console.ReadLine();
+
+			Console.WriteLine("Add meg melyik játékos kezdjen");
+			Console.WriteLine("0) random ");
+			Console.WriteLine($"1 {Jatekos1}");
+			Console.WriteLine($"2 {Jatekos2}");
+			string KezdoJatekos = Console.ReadLine();
+			
+			if (! (KezdoJatekos == "0" || KezdoJatekos == "1" || KezdoJatekos == "2" ))
+			{
+				Console.WriteLine("Helytelen értéket adott meg");
+			}
+
 
 
 			Console.WriteLine("Amöba játék");
