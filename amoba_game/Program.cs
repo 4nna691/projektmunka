@@ -25,6 +25,7 @@ namespace amoba_game
 				Console.WriteLine("Helytelen értéket adott meg");
 			}
 
+			int Korokszama = KorokszamanakBekerese();
 
 
 			Console.WriteLine("Amöba játék");
@@ -65,6 +66,25 @@ namespace amoba_game
 				}
 
 			}
+
+		}
+		static int KorokszamanakBekerese()
+		{
+
+			Console.WriteLine("Add meg a körök számát:  0) = Bármennyi kör ");
+			int KorokSzama = int.Parse(Console.ReadLine());
+
+			if ((KorokSzama > 10))
+			{
+				Console.WriteLine("A körök száma nem lehet 10-nél nagyobb");
+				return KorokszamanakBekerese();
+			}
+			if (KorokSzama < 0)
+			{
+				Console.WriteLine("Helytelen értéket adott meg");
+				return KorokszamanakBekerese();
+			}
+			return KorokSzama;
 		}
 	}
 }
