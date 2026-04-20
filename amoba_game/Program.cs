@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Linq;
 
 namespace amoba_game
 {
@@ -6,6 +7,13 @@ namespace amoba_game
 	{
 		static void Main(string[] args)
 		{
+			Console.WriteLine("Add meg az első játékos nevét");
+			string Jatekos1 = Console.ReadLine();
+
+			Console.WriteLine("Add meg az második játékos nevét");
+			string Jatekos2 = Console.ReadLine();
+
+
 			Console.WriteLine("Amöba játék");
 			int width = 0; 
 			int height = 0;
@@ -36,15 +44,13 @@ namespace amoba_game
 							sorelvalaszto += "--";
 						}
 						Console.WriteLine(sorelvalaszto);
-
-
-
 					}
 				}
 				else
 				{
 					Console.WriteLine("helytelen adat");
 				}
+
 			}
 		}
 	}
