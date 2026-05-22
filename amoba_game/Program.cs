@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.WebSockets;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 
 namespace amoba_game
@@ -19,10 +21,10 @@ namespace amoba_game
 
 			int Korokszama = KorokszamanakBekerese();
 
-		
+
 
 			Console.WriteLine("Amöba játék");
-			int width = 0; 
+			int width = 0;
 			int height = 0;
 			while (width == 0 || height == 0)
 			{
@@ -40,24 +42,24 @@ namespace amoba_game
 				}
 
 			}
-
-			OsszegzesKiirasa(Jatekos1, Jatekos2, Kezdojatekos, Korokszama, width, height);
+			int[,] pálya = new int[width,height];
+			pálya[0, 0] = 0;
 			for (int y = 0; y < height; y++)
 			{
-				string sor = "|";
-
 				for (int x = 0; x < width; x++)
 				{
-					sor += " |";
+					pálya[y, x] = 0;
 				}
-				Console.WriteLine(sor);
+			}
+				OsszegzesKiirasa(Jatekos1, Jatekos2, Kezdojatekos, Korokszama, width, height);
+			int aktualisJatekos = Kezdojatekos == Jatekos1 ? 1:2 ;
+			while (true) 
+			{
+				pályaKirajzolas(pálya);
+				LépésAdat adat = Lépés(aktualisJatekos);
+				aktualisJatekos = aktualisJatekos == 1 ? 2 : 1;
+				pálya[adat.x, adat.y] = adat.jatekos;
 
-				string sorelvalaszto = "-";
-				for (int x = 0; x < width; x++)
-				{
-					sorelvalaszto += "--";
-				}
-				Console.WriteLine(sorelvalaszto);
 			}
 
 		}
@@ -106,6 +108,67 @@ namespace amoba_game
 			Console.WriteLine($"pálya mérete {width} x {height}");
 			Console.WriteLine("------------------------------------------------------------------------");
 			Console.WriteLine("");
+
+		}
+
+		static LépésAdat Lépés(int jatekos)
+		{
+			Console.WriteLine("Hova szeretnél lépni(x,y)");
+			string LépésInput = Console.ReadLine();
+			string[] kordináták = LépésInput.Split(',');
+			return new LépésAdat(int.Parse(kordináták[0])-1, int.Parse(kordináták[1])-1, jatekos) ;
+
+		}
+		class LépésAdat
+		{
+
+			public LépésAdat(int x, int y, int jatekos)
+			{
+				this.x = x;
+				this.y = y;
+				this.jatekos = jatekos;
+			}
+
+			public int x { get; set; }
+			public int y { get; set; }
+			public int jatekos { get; set; }
+
+		}
+
+		static void pályaKirajzolas(int[,]pálya)
+		{
+			int width = pálya.GetLength(1);
+			int height = pálya.GetLength(0);
+			for (int y = 0; y < height; y++)
+			{
+				string sor = "|";
+
+				for (int x = 0; x < width; x++)
+				{
+					switch(pálya[x,y])
+					{
+						case 0:
+							sor += " |";
+							break;
+
+						case 1:
+							sor += "O|";
+							break;
+
+						case 2:
+							sor += "X|";
+							break;
+					}
+				}
+				Console.WriteLine(sor);
+
+				string sorelvalaszto = "-";
+				for (int x = 0; x < width; x++)
+				{
+					sorelvalaszto += "--";
+				}
+				Console.WriteLine(sorelvalaszto);
+			}
 		}
 	}
 }
