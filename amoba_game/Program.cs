@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
@@ -53,13 +54,42 @@ namespace amoba_game
 			}
 				OsszegzesKiirasa(Jatekos1, Jatekos2, Kezdojatekos, Korokszama, width, height);
 			int aktualisJatekos = Kezdojatekos == Jatekos1 ? 1:2 ;
-			while (true) 
+			Console.WriteLine("Játkszabály: Az nyer, akinek először sikerül 3 saját jelet megszakítás nélkül egy vonalba (sorba, oszlopba vagy átlóba) raknia" +
+			"Játék inditásához nyomd meg az entert....");
+			Console.ReadLine();
+			int eredmeny = 0;
+			while (eredmeny == 0) 
 			{
+			Console.Clear();
 				pályaKirajzolas(pálya);
-				LépésAdat adat = Lépés(aktualisJatekos);
-				aktualisJatekos = aktualisJatekos == 1 ? 2 : 1;
-				pálya[adat.x, adat.y] = adat.jatekos;
+				LépésAdat adat = Lépés(aktualisJatekos, aktualisJatekos == 1 ? Jatekos1 : Jatekos2);
+				try
+				{
+				
 
+					if (pálya[adat.x, adat.y] == 0)
+					{
+						pálya[adat.x, adat.y] = adat.jatekos;
+						eredmeny = nyert(pálya, aktualisJatekos);
+						aktualisJatekos = aktualisJatekos == 1 ? 2 : 1;
+					}
+					else
+					{
+						Console.WriteLine("EZ A MEZŐ MÁR FOGLALT");
+					}
+				}
+				catch(Exception e) {
+					Console.WriteLine("Érvénytelen lépés");
+				}
+				
+			}
+			if (eredmeny == 1) 
+			{
+				Console.WriteLine($"Gyöztes játékos: {Jatekos1}");
+			}
+			else 
+			{
+				Console.WriteLine($"Gyöztes játékos: {Jatekos2}");
 			}
 
 		}
@@ -111,12 +141,18 @@ namespace amoba_game
 
 		}
 
-		static LépésAdat Lépés(int jatekos)
+		static LépésAdat Lépés(int jatekos, string aktualisJatekosNeve)
 		{
-			Console.WriteLine("Hova szeretnél lépni(x,y)");
-			string LépésInput = Console.ReadLine();
-			string[] kordináták = LépésInput.Split(',');
-			return new LépésAdat(int.Parse(kordináták[0])-1, int.Parse(kordináták[1])-1, jatekos) ;
+			while (true)
+			{
+				Console.WriteLine($"Hova szeretnél lépni {aktualisJatekosNeve} (x,y)");
+				string LépésInput = Console.ReadLine();
+			if (LépésInput.Contains(",")) 
+			{
+					string[] kordináták = LépésInput.Split(',');
+					return new LépésAdat(int.Parse(kordináták[0]) - 1, int.Parse(kordináták[1]) - 1, jatekos);
+			}
+			}
 
 		}
 		class LépésAdat
@@ -169,6 +205,90 @@ namespace amoba_game
 				}
 				Console.WriteLine(sorelvalaszto);
 			}
+
+		}
+		static int nyert (int[,] pálya, int AktualisJatekos)
+		{
+			
+			int width = pálya.GetLength(1);
+			int height = pálya.GetLength(0);
+
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					//vizszintes vizsgalat
+					bool vizszintesNyert = true;
+					if (width - 3 >= x)
+					{
+						for (int z = 0; z < 3; z++)
+						{
+							if (pálya[x + z, y] != AktualisJatekos)
+							{
+								vizszintesNyert = false;
+							}
+						}
+					}
+					else
+					{
+						vizszintesNyert = false;
+					}
+					//fugoleges vizsgalat
+					bool fugolegesNyert = true;
+					if (height - 3 >= y)
+					{ 
+						for (int z = 0; z < 3; z++)
+					{
+						if (pálya[x, y + z] != AktualisJatekos)
+						{
+							fugolegesNyert = false;
+						}
+					}
+				}
+				else
+				{
+						fugolegesNyert = false;
+				}
+					//jobbra atlos vizsgalat
+					bool jobbatloNyert = true;
+					if (height - 3 >= y && width - 3 >= x)
+					{
+						for (int z = 0; z < 3; z++)
+						{
+							if (pálya[x + z, y + z] != AktualisJatekos)
+							{
+								jobbatloNyert = false;
+							}
+						}
+					}
+					else 
+					{
+						jobbatloNyert = false;
+					}
+					//balra atlos viszgalat
+					bool balatlosNyert = true;
+					if (height - 3 >= y && 1 < x)
+					{
+						for (int z = 0; z < 3; z++)
+						{
+							if (pálya[x - z, y + z] != AktualisJatekos)
+							{
+								balatlosNyert = false;
+							}
+						}
+					} 
+					else 
+					{
+						balatlosNyert = false;
+					}
+					if 
+					(vizszintesNyert || fugolegesNyert || jobbatloNyert || balatlosNyert)
+					{
+						return AktualisJatekos;
+					}
+				}
+			}
+			return 0;
 		}
 	}
 }
